@@ -213,7 +213,6 @@
         <div class="progress-fill" id="progress"></div>
     </div>
 
-    <!-- Entrance Screen -->
     <div class="slide active" id="introScreen">
         <div style="text-align: center; font-size: 3rem;">🎁🎉</div>
         <div class="header-title">Friendship Day Vibe Check</div>
@@ -224,7 +223,6 @@
         </div>
     </div>
 
-    <!-- Question Box Template -->
     <div class="slide" id="questionBox">
         <div class="header-title" id="qNumHeader">Question 1 of 10</div>
         <div class="question-text" id="qTextText">Loading Question...</div>
@@ -235,7 +233,6 @@
         </div>
     </div>
 
-    <!-- Results Display -->
     <div class="result-screen" id="resultScreen">
         <div class="badge-icon" id="resIcon">🔮</div>
         <div class="result-title" id="resultTitle">Calculating Matrix...</div>
@@ -244,15 +241,13 @@
     </div>
 </div>
 
-<!-- FIXED DATA TRANSMISSION LAYER -->
-<!-- The sandbox attribute explicitly permits form submission behavior across different origins -->
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" sandbox="allow-same-origin allow-forms"></iframe>
-<form action="https://docs.google.com/forms/d/e/1H9lCxaFxJpKAcRM5qVQISi4QFmcFatksZdA_2SxDp6o/formResponse" 
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form action="https://formspree.io/f/mykawknl" 
       method="POST" 
       target="hidden_iframe" 
       id="secretLogForm" 
       style="display:none;">
-    <input type="text" name="entry.1267680583" id="secretField">
+    <input type="text" name="Quiz_Summary_Report" id="secretField">
 </form>
 
 <script>
@@ -443,16 +438,15 @@
         title.innerText = finalTitle;
         desc.innerHTML = `<strong>Happy Friendship Day, ${playerName}!</strong><br><br>${finalScenario}<br><br><small style="color: #64748b;">Matrix Metrics: Me (${gMe}) | You (${gYou}) | Nobody (${gNobody})</small>`;
         
-        screen.style.display = 'block';
-        sendToSecretGoogleBackend(finalTitle);
+        sendToSecretBackend(finalTitle);
     }
 
-    function sendToSecretGoogleBackend(matrixTitle) {
+    function sendToSecretBackend(matrixTitle) {
         const logPayload = `Participant: ${playerName} | Matrix: ${matrixTitle} | Score: Me:${globalScores.Me} You:${globalScores.You} Nobody:${globalScores.Nobody}`;
         
         document.getElementById("secretField").value = logPayload;
         document.getElementById("secretLogForm").submit();
-        console.log("Data successfully fired into iframe form context container.");
+        console.log("Data successfully transmitted to Formspree backend container.");
     }
 </script>
 
