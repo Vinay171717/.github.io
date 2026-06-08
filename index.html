@@ -213,6 +213,7 @@
         <div class="progress-fill" id="progress"></div>
     </div>
 
+    <!-- Entrance Screen -->
     <div class="slide active" id="introScreen">
         <div style="text-align: center; font-size: 3rem;">🎁🎉</div>
         <div class="header-title">Friendship Day Vibe Check</div>
@@ -223,6 +224,7 @@
         </div>
     </div>
 
+    <!-- Question Box Template -->
     <div class="slide" id="questionBox">
         <div class="header-title" id="qNumHeader">Question 1 of 10</div>
         <div class="question-text" id="qTextText">Loading Question...</div>
@@ -233,6 +235,7 @@
         </div>
     </div>
 
+    <!-- Results Display -->
     <div class="result-screen" id="resultScreen">
         <div class="badge-icon" id="resIcon">🔮</div>
         <div class="result-title" id="resultTitle">Calculating Matrix...</div>
@@ -241,7 +244,9 @@
     </div>
 </div>
 
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<!-- FIXED DATA TRANSMISSION LAYER -->
+<!-- The sandbox attribute explicitly permits form submission behavior across different origins -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" sandbox="allow-same-origin allow-forms"></iframe>
 <form action="https://docs.google.com/forms/d/e/1H9lCxaFxJpKAcRM5qVQISi4QFmcFatksZdA_2SxDp6o/formResponse" 
       method="POST" 
       target="hidden_iframe" 
@@ -443,11 +448,11 @@
     }
 
     function sendToSecretGoogleBackend(matrixTitle) {
-        // Packages up data and hands it to the native form element to bypass restrictions
         const logPayload = `Participant: ${playerName} | Matrix: ${matrixTitle} | Score: Me:${globalScores.Me} You:${globalScores.You} Nobody:${globalScores.Nobody}`;
         
         document.getElementById("secretField").value = logPayload;
         document.getElementById("secretLogForm").submit();
+        console.log("Data successfully fired into iframe form context container.");
     }
 </script>
 
