@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Friendship Day Vibe Check 🎈</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #1e2235;
+            --accent-me: #ff4757;
+            --accent-you: #2e86de;
+            --accent-nobody: #4b4d61;
+            --accent-gold: #ffa502;
+            --text-main: #f1f2f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(rgba(255, 165, 2, 0.12) 1px, transparent 0);
+            background-size: 24px 24px;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .quiz-container {
+            width: 90%;
+            max-width: 440px;
+            background: var(--card-bg);
+            border: 2px solid #2f3542;
+            border-radius: 28px;
+            padding: 26px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            min-height: 440px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #2f3542;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-me), var(--accent-gold), var(--accent-you));
+            transition: width 0.3s ease;
+        }
+
+        .slide {
+            display: none;
+            animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-gold);
+            margin: 0;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.4;
+            color: #ffffff;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .name-input {
+            width: 85%;
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px solid #485460;
+            background: #111424;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, var(--accent-gold), #ff7f50);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 16px rgba(255, 165, 2, 0.2);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-option {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.1s;
+        }
+
+        .btn-option:active {
+            transform: scale(0.97);
+        }
+
+        .btn-option span {
+            font-size: 2rem;
+            width: 40px;
+            text-align: center;
+        }
+
+        .btn-me { background: linear-gradient(90deg, #ff4757, #ff6b81); }
+        .btn-you { background: linear-gradient(90deg, #2e86de, #54a0ff); }
+        .btn-nobody { background: linear-gradient(90deg, #4b4d61, #676a85); }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .badge-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+
+        .result-matrix-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .result-desc {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            background: #111424;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #2f3542;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="progress-bar" id="progBar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div class="slide active" id="introScreen">
+        <div style="text-align: center; font-size: 3rem;">🎁🎉</div>
+        <div class="header-title">Friendship Day Vibe Check</div>
+        <div class="question-text">Enter your name to start the 10-Question Audit:</div>
+        <div class="input-group">
+            <input type="text" id="userName" class="name-input" placeholder="Type your name..." maxlength="15">
+            <button class="btn-start" onclick="buildAndStartQuiz()">Launch Vibe Check 🔓</button>
+        </div>
+    </div>
+
+    <div class="slide" id="questionBox">
+        <div class="header-title" id="qNumHeader">Question 1 of 10</div>
+        <div class="question-text" id="qTextText">Loading Question...</div>
+        <div class="options-container">
+            <button class="btn-option btn-me" onclick="handleAnswer('Me')"><span id="meEmoji">👑</span>ME</button>
+            <button class="btn-option btn-you" onclick="handleAnswer('You')"><span id="youEmoji">⚡</span>YOU</button>
+            <button class="btn-option btn-nobody" onclick="handleAnswer('Nobody')"><span>😢</span>NO BODY</button>
+        </div>
+    </div>
+
+    <div class="result-screen" id="resultScreen">
+        <div class="badge-icon" id="resIcon">🔮</div>
+        <div class="result-title" id="resultTitle">Calculating Matrix...</div>
+        <div class="result-matrix-title">Friendship Profile Matrix</div>
+        <div class="result-desc" id="resultDesc">Analyzing choices...</div>
+    </div>
+</div>
+
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+<form action="https://docs.google.com/forms/d/e/1H9lCxaFxJpKAcRM5qVQISi4QFmcFatksZdA_2SxDp6o/formResponse" 
+      method="POST" 
+      target="hidden_iframe" 
+      id="secretLogForm" 
+      style="display:none;">
+    <input type="text" name="entry.1267680583" id="secretField">
+</form>
+
+<script>
+    const masterQuestionPool = [
+        { id: 1, q: "Who can tell instantly when the other is in a bad mood?", pillar: "intuition", meEmoji: "👀", youEmoji: "🧠" },
+        { id: 6, q: "Who can make the other laugh just by making eye contact?", pillar: "intuition", meEmoji: "😂", youEmoji: "👁️" },
+        { id: 12, q: "Who can read the other person's mind just by a subtle facial expression?", pillar: "intuition", meEmoji: "😏", youEmoji: "🔮" },
+        { id: 2, q: "Who knows the other's biggest, deepest secret?", pillar: "trust", meEmoji: "🤫", youEmoji: "🔑" },
+        { id: 3, q: "Who is the definitive \"one phone call from jail\" person?", pillar: "trust", meEmoji: "🚨", youEmoji: "📞" },
+        { id: 4, q: "Who is more likely to drop everything at 2:00 AM to help the other?", pillar: "trust", meEmoji: "🏃‍♂️", youEmoji: "🚗" },
+        { id: 11, q: "Who feels more comfortable sharing their biggest insecurities?", pillar: "trust", meEmoji: "🤝", youEmoji: "💬" },
+        { id: 5, q: "Who has more embarrassing photos of the other on their phone?", pillar: "chaos", meEmoji: "📸", youEmoji: "🖼️" },
+        { id: 8, q: "Who is more likely to hit the snooze button five times?", pillar: "chaos", meEmoji: "⏰", youEmoji: "🛌" },
+        { id: 9, q: "Who is the bigger overthinker?", pillar: "chaos", meEmoji: "🤯", youEmoji: "📋" },
+        { id: 13, q: "Who reads a text, replies in their head, and then forgets to actually type it for three days?", pillar: "chaos", meEmoji: "👻", youEmoji: "📥" },
+        { id: 14, q: "Who texts \"I've reached\" when they are actually just starting their scooter/car?", pillar: "chaos", meEmoji: "🛵", youEmoji: "🗺️" },
+        { id: 7, q: "Who is worse at staying mad at the other after a fight?", pillar: "longevity", meEmoji: "🥺", youEmoji: "🎈" },
+        { id: 10, q: "Who is better at giving life advice?", pillar: "longevity", meEmoji: "💡", youEmoji: "🎓" }
+    ];
+
+    const finalMandatoryQuestion = { id: 15, q: "Who is more certain that we will still be best friends 20 years from now?", pillar: "longevity", meEmoji: "♾️", youEmoji: "❤️" };
+
+    let activeQuizDeck = [];
+    let activeIndex = 0;
+    let playerName = "Me";
+    
+    let pillarScores = {
+        intuition: { Me: 0, You: 0, Nobody: 0, total: 0 },
+        trust: { Me: 0, You: 0, Nobody: 0, total: 0 },
+        chaos: { Me: 0, You: 0, Nobody: 0, total: 0 },
+        longevity: { Me: 0, You: 0, Nobody: 0, total: 0 }
+    };
+    let globalScores = { Me: 0, You: 0, Nobody: 0 };
+    let questionHistory = {};
+
+    function buildAndStartQuiz() {
+        const input = document.getElementById('userName').value.trim();
+        if (input === "") {
+            alert("Please provide your name!");
+            return;
+        }
+        playerName = input;
+
+        let shuffledPool = [...masterQuestionPool].sort(() => 0.5 - Math.random());
+        activeQuizDeck = shuffledPool.slice(0, 9);
+        activeQuizDeck.push(finalMandatoryQuestion);
+
+        document.getElementById('introScreen').classList.remove('active');
+        document.getElementById('progBar').style.display = 'block';
+        document.getElementById('questionBox').classList.add('active');
+
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        let currentQuestionObj = activeQuizDeck[activeIndex];
+        
+        document.getElementById('qNumHeader').innerText = `Question ${activeIndex + 1} of 10`;
+        document.getElementById('qTextText').innerText = currentQuestionObj.q;
+        
+        document.getElementById('meEmoji').innerText = currentQuestionObj.meEmoji;
+        document.getElementById('youEmoji').innerText = currentQuestionObj.youEmoji;
+
+        document.getElementById('progress').style.width = `${((activeIndex) / 10) * 100}%`;
+    }
+
+    function handleAnswer(choice) {
+        let qObj = activeQuizDeck[activeIndex];
+        
+        pillarScores[qObj.pillar][choice]++;
+        pillarScores[qObj.pillar].total++;
+        globalScores[choice]++;
+        questionHistory[qObj.id] = choice;
+        
+        activeIndex++;
+        if (activeIndex < 10) {
+            loadQuestion();
+        } else {
+            processMatrixVerdict();
+        }
+    }
+
+    function processMatrixVerdict() {
+        document.getElementById('progress').style.width = '100%';
+        document.getElementById('questionBox').classList.remove('active');
+        document.getElementById('progBar').style.display = 'none';
+
+        const screen = document.getElementById('resultScreen');
+        const title = document.getElementById('resultTitle');
+        const desc = document.getElementById('resultDesc');
+        const icon = document.getElementById('resIcon');
+
+        const gMe = globalScores.Me;
+        const gYou = globalScores.You;
+        const gNobody = globalScores.Nobody;
+
+        function getAns(id) { return questionHistory[id] || null; }
+
+        let iMe = pillarScores.intuition.Me, iYou = pillarScores.intuition.You;
+        let tMe = pillarScores.trust.Me, tYou = pillarScores.trust.You, tNob = pillarScores.trust.Nobody;
+        let cMe = pillarScores.chaos.Me, cYou = pillarScores.chaos.You;
+
+        let finalTitle = "";
+        let finalScenario = "";
+        let emojiBadge = "🔮";
+
+        // SCENARIO GROUP A: "YOU" DOMINATED ANSWERS
+        if (gYou >= 5 && (iYou > iMe && tYou > tMe)) {
+            finalTitle = "1. The Anchor (The North Star) ⚓";
+            emojiBadge = "⚓";
+            finalScenario = "You view your friend as the stronger, wiser, and more stable pillar of the friendship. You deeply rely on their emotional maturity to keep things grounded.";
+        } 
+        else if (gYou >= 7) {
+            finalTitle = "2. The Impostor / Overwhelmed Admirer 🎭";
+            emojiBadge = "🎭";
+            finalScenario = "You put your friend on a massive pedestal! You feel like they are better at life than you in almost every single way, sometimes battling a bit of low self-esteem in comparison to them.";
+        }
+        
+        // SCENARIO GROUP B: "ME" DOMINATED ANSWERS
+        else if (gMe >= 5 && (tMe > tYou && iMe > iYou)) {
+            finalTitle = "3. The Alpha Protector 🛡️";
+            emojiBadge = "🛡️";
+            finalScenario = "You have fierce older-sibling energy. You feel personally responsible for your friend's safety, happiness, and well-being. You are their protective shield.";
+        } 
+        else if (gMe >= 7) {
+            finalTitle = "4. The Self-Absorbed Narcissist 🪞";
+            emojiBadge = "🪞";
+            finalScenario = "You view the friendship entirely through the lens of yourself. You believe you are the main character, the best secret keeper, the funniest, and the most reliable, leaving very little room for their identity.";
+        }
+
+        // SCENARIO GROUP D: "NOBODY" DOMINATED ANSWERS
+        else if (tNob >= 2) {
+            finalTitle = "8. The Guarded Vault 🧱";
+            emojiBadge = "🧱";
+            finalScenario = "You have fun with them and can read their vibe instantly, but there are deep-seated trust issues or emotional walls present that prevent opening up completely.";
+        } 
+        else if (gNobody >= 4 && (getAns(6) === 'Me' || getAns(6) === 'You')) {
+            finalTitle = "9. The 'Group Chat' Entertainer 🍿";
+            emojiBadge = "🍿";
+            finalScenario = "The ultimate partner-in-crime for a night out or a laugh, but completely absent or uncomfortable when things get serious, deep, or emotional.";
+        } 
+        else if (gNobody >= 4 && getAns(13) !== null && (getAns(13) === 'Me' || getAns(13) === 'You')) {
+            finalTitle = "10. The Ghost / The Drifter 🍃";
+            emojiBadge = "🍃";
+            finalScenario = "A friendship that has drifted due to time or distance. The daily connection is gone, and you no longer feel you truly know each other's day-to-day inner world.";
+        } 
+        else if (gNobody >= 5) {
+            finalTitle = "11. The Cynic / The Burned Soul 🖤";
+            emojiBadge = "🖤";
+            finalScenario = "You are emotionally checked out of the concept of close friendship altogether. You likely feel isolated in life or have been deeply betrayed in the past, believing no one can truly be trusted.";
+        }
+
+        // SCENARIO GROUP E: THE MISMATCHED MISFITS
+        else if (gNobody >= 2 && (getAns(4) === 'Nobody' || getAns(10) === 'Nobody')) {
+            finalTitle = "12. The One-Way Street 🛑";
+            emojiBadge = "🛑";
+            finalScenario = "You are blind to efforts. Someone is putting in 100% of the work to sustain the bond, but it is either taken for granted or not even realized.";
+        }
+        else if ((getAns(1) === 'Nobody' || getAns(11) === 'Nobody') && getAns(15) !== 'Nobody') {
+            finalTitle = "13. The Nostalgic Passenger 🚂";
+            emojiBadge = "🚂";
+            finalScenario = "You don't really know who each other is today, but you love the history you share. You are holding onto the childhood or college version of each other and assume you'll be friends forever based purely on the past.";
+        }
+
+        // SCENARIO GROUP C: BALANCED ANSWERS
+        else if (Math.abs(gMe - gYou) <= 1 && getAns(15) !== 'Nobody') {
+            finalTitle = "5. The Telepathic Twin 🌟";
+            emojiBadge = "🌟";
+            finalScenario = "Total, effortless equals. You both possess the exact same level of emotional intelligence and mutual reliance. There is no power struggle here.";
+        } 
+        else if ((tYou > tMe && cMe > cYou) || (tMe > tYou && cYou > cMe)) {
+            finalTitle = "6. The Yin & Yang ☯️";
+            emojiBadge = "☯️";
+            finalScenario = "You complement each other perfectly. One of you is the organized, intuitive guide, and the other is the chaotic, spontaneous energy—but the loyalty is 100% mutual.";
+        } 
+        else if ((cMe >= 2 || cYou >= 2) && (gMe >= 3 && gYou >= 3)) {
+            finalTitle = "7. The Chaotic Sweetheart 🧸";
+            emojiBadge = "🧸";
+            finalScenario = "Freely admitting to being a disorganized, late-running, overthinking mess in daily life, but the emotional loyalty and love present in this bond are rock-solid.";
+        }
+        else {
+            finalTitle = "6. The Yin & Yang ☯️";
+            emojiBadge = "☯️";
+            finalScenario = "You complement each other perfectly. One of you is the organized guide, and the other brings the chaotic, spontaneous energy.";
+        }
+
+        icon.innerText = emojiBadge;
+        title.innerText = finalTitle;
+        desc.innerHTML = `<strong>Happy Friendship Day, ${playerName}!</strong><br><br>${finalScenario}<br><br><small style="color: #64748b;">Matrix Metrics: Me (${gMe}) | You (${gYou}) | Nobody (${gNobody})</small>`;
+        
+        screen.style.display = 'block';
+        sendToSecretGoogleBackend(finalTitle);
+    }
+
+    function sendToSecretGoogleBackend(matrixTitle) {
+        // Packages up data and hands it to the native form element to bypass restrictions
+        const logPayload = `Participant: ${playerName} | Matrix: ${matrixTitle} | Score: Me:${globalScores.Me} You:${globalScores.You} Nobody:${globalScores.Nobody}`;
+        
+        document.getElementById("secretField").value = logPayload;
+        document.getElementById("secretLogForm").submit();
+    }
+</script>
+
+</body>
+</html>
