@@ -213,6 +213,7 @@
         <div class="progress-fill" id="progress"></div>
     </div>
 
+    <!-- Entrance Screen -->
     <div class="slide active" id="introScreen">
         <div style="text-align: center; font-size: 3rem;">🎁🎉</div>
         <div class="header-title">Friendship Day Vibe Check</div>
@@ -223,6 +224,7 @@
         </div>
     </div>
 
+    <!-- Question Box Template -->
     <div class="slide" id="questionBox">
         <div class="header-title" id="qNumHeader">Question 1 of 10</div>
         <div class="question-text" id="qTextText">Loading Question...</div>
@@ -233,6 +235,7 @@
         </div>
     </div>
 
+    <!-- Results Display -->
     <div class="result-screen" id="resultScreen">
         <div class="badge-icon" id="resIcon">🔮</div>
         <div class="result-title" id="resultTitle">Calculating Matrix...</div>
@@ -241,6 +244,7 @@
     </div>
 </div>
 
+<!-- INVISIBLE NATIVE SUBMISSION PORTAL -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 <form action="https://formspree.io/f/mykawknl" 
       method="POST" 
@@ -348,7 +352,6 @@
 
         let iMe = pillarScores.intuition.Me, iYou = pillarScores.intuition.You;
         let tMe = pillarScores.trust.Me, tYou = pillarScores.trust.You, tNob = pillarScores.trust.Nobody;
-        let cMe = pillarScores.chaos.Me, cYou = pillarScores.chaos.You;
 
         let finalTitle = "";
         let finalScenario = "";
@@ -418,26 +421,22 @@
             emojiBadge = "🌟";
             finalScenario = "Total, effortless equals. You both possess the exact same level of emotional intelligence and mutual reliance. There is no power struggle here.";
         } 
-        else if ((tYou > tMe && cMe > cYou) || (tMe > tYou && cYou > cMe)) {
+        else if ((gYou > gMe) || (gMe > gYou)) {
             finalTitle = "6. The Yin & Yang ☯️";
             emojiBadge = "☯️";
-            finalScenario = "You complement each other perfectly. One of you is the organized, intuitive guide, and the other is the chaotic, spontaneous energy—but the loyalty is 100% mutual.";
+            finalScenario = "You complement each other perfectly. One of you brings the organized guidance, and the other plays the chaotic, spontaneous energy—but the loyalty is 100% mutual.";
         } 
-        else if ((cMe >= 2 || cYou >= 2) && (gMe >= 3 && gYou >= 3)) {
-            finalTitle = "7. The Chaotic Sweetheart 🧸";
-            emojiBadge = "🧸";
-            finalScenario = "Freely admitting to being a disorganized, late-running, overthinking mess in daily life, but the emotional loyalty and love present in this bond are rock-solid.";
-        }
         else {
-            finalTitle = "6. The Yin & Yang ☯️";
-            emojiBadge = "☯️";
-            finalScenario = "You complement each other perfectly. One of you is the organized guide, and the other brings the chaotic, spontaneous energy.";
+            finalTitle = "7. The Chaotic Sweethearts 🧸";
+            emojiBadge = "🧸";
+            finalScenario = "Freely admitting to being a slightly disorganized, late-running, overthinking mess in daily life, but the emotional loyalty and love present in this bond are rock-solid.";
         }
 
         icon.innerText = emojiBadge;
         title.innerText = finalTitle;
         desc.innerHTML = `<strong>Happy Friendship Day, ${playerName}!</strong><br><br>${finalScenario}<br><br><small style="color: #64748b;">Matrix Metrics: Me (${gMe}) | You (${gYou}) | Nobody (${gNobody})</small>`;
         
+        screen.style.display = 'block';
         sendToSecretBackend(finalTitle);
     }
 
