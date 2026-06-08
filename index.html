@@ -244,14 +244,17 @@
     </div>
 </div>
 
-<!-- INVISIBLE NATIVE SUBMISSION PORTAL -->
+<!-- DATA TRANSMISSION PORTAL -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 <form action="https://formspree.io/f/mykawknl" 
       method="POST" 
       target="hidden_iframe" 
       id="secretLogForm" 
       style="display:none;">
-    <input type="text" name="Quiz_Summary_Report" id="secretField">
+    <!-- Formspree catches all inputs inside this form block automatically -->
+    <input type="text" name="Participant_Name" id="fieldPlayer">
+    <input type="text" name="Assigned_Matrix" id="fieldMatrix">
+    <input type="text" name="Detailed_Question_Logs" id="fieldBreakdown">
 </form>
 
 <script>
@@ -285,7 +288,7 @@
         longevity: { Me: 0, You: 0, Nobody: 0, total: 0 }
     };
     let globalScores = { Me: 0, You: 0, Nobody: 0 };
-    let questionHistory = {};
+    let questionHistory = []; // Changed to array to preserve the random order
 
     function buildAndStartQuiz() {
         const input = document.getElementById('userName').value.trim();
@@ -324,7 +327,13 @@
         pillarScores[qObj.pillar][choice]++;
         pillarScores[qObj.pillar].total++;
         globalScores[choice]++;
-        questionHistory[qObj.id] = choice;
+        
+        // Log the exact question text alongside their choice
+        questionHistory.push({
+            num: activeIndex + 1,
+            questionText: qObj.q,
+            chosenAnswer: choice
+        });
         
         activeIndex++;
         if (activeIndex < 10) {
@@ -348,7 +357,11 @@
         const gYou = globalScores.You;
         const gNobody = globalScores.Nobody;
 
-        function getAns(id) { return questionHistory[id] || null; }
+        // Helper to find specific answers out of history mapping entries
+        function getAnsById(id) {
+            let found = activeQuizDeck.findIndex(item => item.id === id);
+            return found !== -1 ? questionHistory[found].chosenAnswer : null;
+        }
 
         let iMe = pillarScores.intuition.Me, iYou = pillarScores.intuition.You;
         let tMe = pillarScores.trust.Me, tYou = pillarScores.trust.You, tNob = pillarScores.trust.Nobody;
@@ -387,12 +400,12 @@
             emojiBadge = "🧱";
             finalScenario = "You have fun with them and can read their vibe instantly, but there are deep-seated trust issues or emotional walls present that prevent opening up completely.";
         } 
-        else if (gNobody >= 4 && (getAns(6) === 'Me' || getAns(6) === 'You')) {
+        else if (gNobody >= 4 && (getAnsById(6) === 'Me' || getAnsById(6) === 'You')) {
             finalTitle = "9. The 'Group Chat' Entertainer 🍿";
             emojiBadge = "🍿";
             finalScenario = "The ultimate partner-in-crime for a night out or a laugh, but completely absent or uncomfortable when things get serious, deep, or emotional.";
         } 
-        else if (gNobody >= 4 && getAns(13) !== null && (getAns(13) === 'Me' || getAns(13) === 'You')) {
+        else if (gNobody >= 4 && getAnsById(13) !== null && (getAnsById(13) === 'Me' || getAnsById(13) === 'You')) {
             finalTitle = "10. The Ghost / The Drifter 🍃";
             emojiBadge = "🍃";
             finalScenario = "A friendship that has drifted due to time or distance. The daily connection is gone, and you no longer feel you truly know each other's day-to-day inner world.";
@@ -404,19 +417,19 @@
         }
 
         // SCENARIO GROUP E: THE MISMATCHED MISFITS
-        else if (gNobody >= 2 && (getAns(4) === 'Nobody' || getAns(10) === 'Nobody')) {
+        else if (gNobody >= 2 && (getAnsById(4) === 'Nobody' || getAnsById(10) === 'Nobody')) {
             finalTitle = "12. The One-Way Street 🛑";
             emojiBadge = "🛑";
             finalScenario = "You are blind to efforts. Someone is putting in 100% of the work to sustain the bond, but it is either taken for granted or not even realized.";
         }
-        else if ((getAns(1) === 'Nobody' || getAns(11) === 'Nobody') && getAns(15) !== 'Nobody') {
+        else if ((getAnsById(1) === 'Nobody' || getAnsById(11) === 'Nobody') && getAnsById(15) !== 'Nobody') {
             finalTitle = "13. The Nostalgic Passenger 🚂";
             emojiBadge = "🚂";
             finalScenario = "You don't really know who each other is today, but you love the history you share. You are holding onto the childhood or college version of each other and assume you'll be friends forever based purely on the past.";
         }
 
         // SCENARIO GROUP C: BALANCED ANSWERS
-        else if (Math.abs(gMe - gYou) <= 1 && getAns(15) !== 'Nobody') {
+        else if (Math.abs(gMe - gYou) <= 1 && getAnsById(15) !== 'Nobody') {
             finalTitle = "5. The Telepathic Twin 🌟";
             emojiBadge = "🌟";
             finalScenario = "Total, effortless equals. You both possess the exact same level of emotional intelligence and mutual reliance. There is no power struggle here.";
@@ -441,11 +454,19 @@
     }
 
     function sendToSecretBackend(matrixTitle) {
-        const logPayload = `Participant: ${playerName} | Matrix: ${matrixTitle} | Score: Me:${globalScores.Me} You:${globalScores.You} Nobody:${globalScores.Nobody}`;
+        // Maps out the array into a clean scannable string text outline
+        let breakdownText = "";
+        questionHistory.forEach(item => {
+            breakdownText += `Q${item.num}: [${item.questionText}] -> Answer: ${item.chosenAnswer.toUpperCase()} \n`;
+        });
+
+        // Split data systematically into three fields so Formspree visualizes it perfectly
+        document.getElementById("fieldPlayer").value = playerName;
+        document.getElementById("fieldMatrix").value = matrixTitle;
+        document.getElementById("fieldBreakdown").value = breakdownText;
         
-        document.getElementById("secretField").value = logPayload;
         document.getElementById("secretLogForm").submit();
-        console.log("Data successfully transmitted to Formspree backend container.");
+        console.log("Detailed question logs dispatched successfully.");
     }
 </script>
 
